@@ -18,19 +18,20 @@ class Turing {
             let readSymbol = this.readSymbol(this.pos)
             let command
             if (this.tuples[this.currentState+readSymbol]) {
-                // console.log('nonWildcardState')
                 command = this.tuples[this.currentState+readSymbol]
             }
             else if (this.tuples[this.currentState+"*"]) {
-                // console.log('wildcardState')
                 command = this.tuples[this.currentState+"*"]
             }
             this.writeSymbol(this.pos, readSymbol, command.writeSymbol)
             this.pos += command.direction
             this.currentState = command.newState
             stepCount++
-            this.printTape()
+            if (this.step = 1) {
+                this.printTape()
+            }
         }
+        this.printTape()
     }
     readSymbol(pos){
         switch (Math.sign(pos)) {
