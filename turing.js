@@ -27,7 +27,7 @@ class Turing {
             this.pos += command.direction
             this.currentState = command.newState
             stepCount++
-            if (this.step = 1) {
+            if (this.step === 1) {
                 this.printTape()
             }
         }
