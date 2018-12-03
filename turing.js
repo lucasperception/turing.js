@@ -1,38 +1,33 @@
 class Turing {
     constructor(tuples, tape, step) {
-        this.tuples = tuples
+        this.PRINT_BUFFER = 15
+        this.MAX_STEPS = 99999
         this.tape = tape.split(' ').join('_').split('')
-        console.log(this.tape)
         this.negTape = []
         this.pos = 0
-        this.step = step
         this.currentState = 0
-        this.execute()
+        this.execute(tuples, step)
     }
-    execute(){
-        const MAX_STEPS = 99999
+    execute(tuples, step){
         let stepCount = 0
-        let halted = false
         this.printTape()
-        while(this.currentState !== "halt" && stepCount < MAX_STEPS){
-            let readSymbol = this.readSymbol(this.pos)
-            let command
-            if (this.tuples[this.currentState+readSymbol]) {
-                command = this.tuples[this.currentState+readSymbol]
-            }
-            else if (this.tuples[this.currentState+"*"]) {
-                command = this.tuples[this.currentState+"*"]
-            }
-            this.writeSymbol(this.pos, readSymbol, command.writeSymbol)
-            this.pos += command.direction
-            this.currentState = command.newState
+        while(this.currentState !== "halt" && stepCount < this.MAX_STEPS){
+            this.runCommand(tuples)
+            if (step === 1) this.printTape()
             stepCount++
-            if (this.step === 1) {
-                this.printTape()
-            }
         }
         this.printTape()
     }
+
+    runCommand(tuples){
+        let readSymbol = this.readSymbol(this.pos)
+        let command
+        command = tuples[this.currentState+readSymbol] ? tuples[this.currentState+readSymbol] : tuples[this.currentState+"*"]
+        this.writeSymbol(this.pos, readSymbol, command.writeSymbol)
+        this.pos += command.direction
+        this.currentState = command.newState
+    }
+
     readSymbol(pos){
         switch (Math.sign(pos)) {
             case -1:
@@ -63,12 +58,9 @@ class Turing {
     }
 
     printTape(){
-        const PRINT_BUFFER = 15
         let output = ""
-        const BEFORE_BUFFER = this.pos - PRINT_BUFFER
-        const AFTER_BUFFER = this.pos + PRINT_BUFFER
-        let printPos = BEFORE_BUFFER
-        while (printPos < AFTER_BUFFER) {
+        let printPos = this.pos - this.PRINT_BUFFER
+        while (printPos < this.pos + this.PRINT_BUFFER) {
             if (this.readSymbol(printPos)) {
                 if (printPos == this.pos) {
                     output += "|"

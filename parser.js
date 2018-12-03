@@ -7,6 +7,7 @@ class Parser {
     }
 
     loadProgram(path){
+        console.log(`Loading Program...`)
         return fs.readFileSync(path).toString().split("\n")
     }
 
@@ -16,19 +17,9 @@ class Parser {
         for (const tuple of src) {
             const args = tuple.split(' ')
             const tupleId = this.generateTupleId(args[0],args[1])
-            switch (args[3]) {
-                case "l":
-                        args[3] = -1
-                    break;
-                case "r":
-                    args[3] = 1
-                    break;
-                default:
-                    args[3] = 0
-            }
             tuples[tupleId] = {
                 writeSymbol: args[2],
-                direction: args[3],
+                direction: Parser.translateDirections(args[3]),
                 newState: args[4],
             }
         }
@@ -36,6 +27,18 @@ class Parser {
     }
     generateTupleId(state,readSymbol){
         return state.concat(readSymbol)
+    }
+    static translateDirections(arg) {
+        switch (arg) {
+            case "l":
+                return -1
+                break
+            case "r":
+                return 1
+                break
+            default:
+                return 0
+        }
     }
 }
 module.exports = Parser;
