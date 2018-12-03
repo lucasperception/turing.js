@@ -29,16 +29,7 @@ class Parser {
         return state.concat(readSymbol)
     }
     static translateDirections(arg) {
-        switch (arg) {
-            case "l":
-                return -1
-                break
-            case "r":
-                return 1
-                break
-            default:
-                return 0
-        }
+        return arg === 'l' ?  -1 : arg === 'r' ? 1 : 0
     }
 }
 module.exports = Parser;
