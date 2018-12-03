@@ -1,5 +1,4 @@
 const fs = require('fs');
-const readline = require('readline');
 
 class Parser {
     constructor(path) {
@@ -16,8 +15,7 @@ class Parser {
         let tuples = {};
         for (const tuple of src) {
             const args = tuple.split(' ')
-            const tupleId = this.generateTupleId(args[0],args[1])
-            tuples[tupleId] = {
+            tuples[this.tupleId(args[0],args[1])] = {
                 writeSymbol: args[2],
                 direction: Parser.translateDirections(args[3]),
                 newState: args[4],
@@ -25,7 +23,7 @@ class Parser {
         }
         return tuples
     }
-    generateTupleId(state,readSymbol){
+    tupleId(state,readSymbol){
         return state.concat(readSymbol)
     }
     static translateDirections(arg) {
