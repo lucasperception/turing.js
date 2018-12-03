@@ -1,71 +1,54 @@
+const {performance} = require('perf_hooks');
 class Turing {
-    constructor(tuples, tape, step) {
+    constructor(tuples, tape, step, startState) {
         this.PRINT_BUFFER = 15
-        this.MAX_STEPS = 99999
+        this.MAX_STEPS = 999999
         this.tape = tape.split(' ').join('_').split('')
         this.negTape = []
         this.pos = 0
-        this.currentState = 0
+        this.state = startState
         this.execute(tuples, step)
     }
     execute(tuples, step){
         let stepCount = 0
         this.printTape()
-        while(this.currentState !== "halt" && stepCount < this.MAX_STEPS){
+        const execStartTime = performance.now();
+        while(this.state !== "halt" && stepCount < this.MAX_STEPS){
             this.runCommand(tuples)
             if (step === 1) this.printTape()
             stepCount++
         }
+        console.log(`Execution Time ${performance.now() - execStartTime}`)
+        console.log(`Step Count: ${stepCount}`)
         this.printTape()
     }
 
     runCommand(tuples){
-        let readSymbol = this.readSymbol(this.pos)
-        let command
-        command = tuples[this.currentState+readSymbol] ? tuples[this.currentState+readSymbol] : tuples[this.currentState+"*"]
-        this.writeSymbol(this.pos, readSymbol, command.writeSymbol)
-        this.pos += command.direction
-        this.currentState = command.newState
+        let read = this.read(this.pos)
+        const COMMAND = tuples[this.state+read] ? tuples[this.state+read] : tuples[this.state+"*"]
+        this.writeSymbol(this.pos, read, COMMAND.writeSymbol)
+        this.pos += COMMAND.direction
+        this.state = COMMAND.newState
     }
 
-    readSymbol(pos){
-        switch (Math.sign(pos)) {
-            case -1:
-                if (typeof this.negTape[pos * -1] === 'undefined'){
-                    this.negTape[pos * -1] = "_"
-                }
-                return this.negTape[pos * -1]
-                break
-            default:
-                if (typeof this.tape[pos] === 'undefined'){
-                    this.tape[pos] = "_"
-                }
-                return this.tape[pos]
-        }
+    read(pos){
+        let temp = Math.sign(pos) === -1 ? this.negTape[pos * -1] : this.tape[pos]
+        if (typeof temp === 'undefined') {return "_"}
+        else { return temp }
     }
 
     writeSymbol(pos, oldSymbol, newSymbol){
-        if (newSymbol === "*") {
-            newSymbol = oldSymbol
-        }
-        switch (Math.sign(pos)) {
-            case -1:
-                this.negTape[pos * -1] = newSymbol
-                break
-            default:
-                this.tape[pos] = newSymbol
-        }
+        if (newSymbol === "*") newSymbol = oldSymbol
+        Math.sign(pos) === -1 ? this.negTape[pos * -1] = newSymbol : this.tape[pos] = newSymbol
     }
 
     printTape(){
         let output = ""
         let printPos = this.pos - this.PRINT_BUFFER
         while (printPos < this.pos + this.PRINT_BUFFER) {
-            if (this.readSymbol(printPos)) {
-                if (printPos == this.pos) {
-                    output += "|"
-                }
-                output += this.readSymbol(printPos)
+            if (this.read(printPos)) {
+                if (printPos === this.pos) output += "|"
+                output += this.read(printPos)
             }
             printPos++
         }
