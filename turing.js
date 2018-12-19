@@ -1,5 +1,6 @@
 const {performance} = require('perf_hooks');
 class Turing {
+
     constructor(tuples, tape, step, startState) {
         this.PRINT_BUFFER = 15
         this.MAX_STEPS = 999999
@@ -9,6 +10,7 @@ class Turing {
         this.state = startState
         this.execute(tuples, step)
     }
+
     execute(tuples, step){
         let stepCount = 0
         this.printTape()
@@ -33,8 +35,8 @@ class Turing {
 
     read(pos){
         let temp = Math.sign(pos) === -1 ? this.negTape[pos * -1] : this.tape[pos]
-        if (typeof temp === 'undefined') {return "_"}
-        else { return temp }
+        if (typeof temp === 'undefined') return "_"
+        return temp
     }
 
     writeSymbol(pos, oldSymbol, newSymbol){
